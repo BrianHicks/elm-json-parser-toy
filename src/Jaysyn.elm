@@ -10,6 +10,7 @@ type Jaysyn
     | Int Int
     | String String
     | Array (List Jaysyn)
+    | Object (List ( String, Jaysyn ))
 
 
 fromString : String -> Result (List Parser.DeadEnd) Jaysyn
@@ -60,4 +61,27 @@ parser =
             , trailing = Parser.Optional
             }
             |> Parser.map Array
+
+        -- objects
+        , Parser.sequence
+            { start = "{"
+            , separator = ","
+            , end = "}"
+            , spaces = Parser.spaces
+            , item = objectItem
+            , trailing = Parser.Optional
+            }
+            |> Parser.map Object
         ]
+
+
+objectItem : Parser ( String, Jaysyn )
+objectItem =
+    Parser.succeed Tuple.pair
+        |. Parser.token "\""
+        |= Parser.getChompedString (Parser.chompWhile (\c -> c /= '"'))
+        |. Parser.token "\""
+        |. Parser.spaces
+        |. Parser.token ":"
+        |. Parser.spaces
+        |= Parser.lazy (\_ -> parser)

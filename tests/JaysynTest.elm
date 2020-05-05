@@ -56,4 +56,14 @@ jaysynTest =
                     Jaysyn.fromString "[1, null]"
                         |> Expect.equal (Ok (Jaysyn.Array [ Jaysyn.Int 1, Jaysyn.Null ]))
             ]
+        , describe "object"
+            [ test "empty" <|
+                \_ ->
+                    Jaysyn.fromString "{}"
+                        |> Expect.equal (Ok (Jaysyn.Object []))
+            , test "single" <|
+                \_ ->
+                    Jaysyn.fromString "{\"hello\": \"world\"}"
+                        |> Expect.equal (Ok (Jaysyn.Object [ ( "hello", Jaysyn.String "world" ) ]))
+            ]
         ]
