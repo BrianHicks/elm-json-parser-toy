@@ -31,13 +31,17 @@ toString value =
             "false"
 
         Float float ->
-            String.fromFloat float
+            if float == 0.0 then
+                "0.0"
+
+            else
+                String.fromFloat float
 
         Int int ->
             String.fromInt int
 
-        String string ->
-            "\"" ++ string ++ "\""
+        String string_ ->
+            "\"" ++ string_ ++ "\""
 
         Array array ->
             "[" ++ String.join "," (List.map toString array) ++ "]"
@@ -80,10 +84,7 @@ parser =
             }
 
         -- strings
-        , Parser.succeed String
-            |. Parser.token "\""
-            |= Parser.getChompedString (Parser.chompWhile (\c -> c /= '"'))
-            |. Parser.token "\""
+        , Parser.map String string
 
         -- arrays
         , Parser.sequence
@@ -109,12 +110,29 @@ parser =
         ]
 
 
+string : Parser String
+string =
+    Parser.succeed identity
+        |. Parser.token "\""
+        |= Parser.loop [] stringHelper
+
+
+stringHelper : List String -> Parser (Parser.Step (List String) String)
+stringHelper segmentsRev =
+    Parser.oneOf
+        [ Parser.succeed (\_ -> Parser.Loop ("\"" :: segmentsRev))
+            |= Parser.token "\\\""
+        , Parser.succeed (\_ -> Parser.Done (String.concat (List.reverse segmentsRev)))
+            |= Parser.token "\""
+        , Parser.succeed (\segment -> Parser.Loop (segment :: segmentsRev))
+            |= Parser.getChompedString (Parser.chompWhile (\c -> c /= '\\' && c /= '"'))
+        ]
+
+
 objectItem : Parser ( String, Jaysyn )
 objectItem =
     Parser.succeed Tuple.pair
-        |. Parser.token "\""
-        |= Parser.getChompedString (Parser.chompWhile (\c -> c /= '"'))
-        |. Parser.token "\""
+        |= string
         |. Parser.spaces
         |. Parser.token ":"
         |. Parser.spaces

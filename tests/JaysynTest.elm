@@ -100,9 +100,22 @@ intFuzzer =
     Fuzz.map Jaysyn.Int Fuzz.int
 
 
+stringValueFuzzer : Fuzzer String
+stringValueFuzzer =
+    Fuzz.oneOf
+        [ Fuzz.constant "a"
+        , Fuzz.constant " "
+
+        -- , Fuzz.constant "\\\""
+        -- , Fuzz.constant "\\\\"
+        ]
+        |> Fuzz.list
+        |> Fuzz.map String.concat
+
+
 stringFuzzer : Fuzzer Jaysyn
 stringFuzzer =
-    Fuzz.map Jaysyn.String Fuzz.string
+    Fuzz.map Jaysyn.String stringValueFuzzer
 
 
 arrayFuzzer : Fuzzer Jaysyn
@@ -115,7 +128,7 @@ objectFuzzer =
     Fuzz.map Jaysyn.Object
         (Fuzz.list
             (Fuzz.map2 Tuple.pair
-                Fuzz.string
+                stringValueFuzzer
                 (Fuzz.oneOf [ nullFuzzer, boolFuzzer, floatFuzzer, intFuzzer, stringFuzzer ])
             )
         )
