@@ -1,7 +1,8 @@
 module JaysynTest exposing (..)
 
 import Expect
-import Jaysyn
+import Fuzz exposing (Fuzzer)
+import Jaysyn exposing (Jaysyn)
 import Test exposing (..)
 
 
@@ -68,4 +69,66 @@ jaysynTest =
                             |> Expect.equal (Ok (Jaysyn.Object [ ( "hello", Jaysyn.String "world" ) ]))
                 ]
             ]
+        , describe "toString"
+            [ fuzz jaysynFuzzer "encodes a value that can roundtrip to the original" <|
+                \jaysyn ->
+                    jaysyn
+                        |> Jaysyn.toString
+                        |> Jaysyn.fromString
+                        |> Expect.equal (Ok jaysyn)
+            ]
+        ]
+
+
+nullFuzzer : Fuzzer Jaysyn
+nullFuzzer =
+    Fuzz.constant Jaysyn.Null
+
+
+boolFuzzer : Fuzzer Jaysyn
+boolFuzzer =
+    Fuzz.map Jaysyn.Bool Fuzz.bool
+
+
+floatFuzzer : Fuzzer Jaysyn
+floatFuzzer =
+    Fuzz.map Jaysyn.Float Fuzz.float
+
+
+intFuzzer : Fuzzer Jaysyn
+intFuzzer =
+    Fuzz.map Jaysyn.Int Fuzz.int
+
+
+stringFuzzer : Fuzzer Jaysyn
+stringFuzzer =
+    Fuzz.map Jaysyn.String Fuzz.string
+
+
+arrayFuzzer : Fuzzer Jaysyn
+arrayFuzzer =
+    Fuzz.map Jaysyn.Array (Fuzz.list (Fuzz.oneOf [ nullFuzzer, boolFuzzer, floatFuzzer, intFuzzer, stringFuzzer ]))
+
+
+objectFuzzer : Fuzzer Jaysyn
+objectFuzzer =
+    Fuzz.map Jaysyn.Object
+        (Fuzz.list
+            (Fuzz.map2 Tuple.pair
+                Fuzz.string
+                (Fuzz.oneOf [ nullFuzzer, boolFuzzer, floatFuzzer, intFuzzer, stringFuzzer ])
+            )
+        )
+
+
+jaysynFuzzer : Fuzzer Jaysyn
+jaysynFuzzer =
+    Fuzz.oneOf
+        [ nullFuzzer
+        , boolFuzzer
+        , floatFuzzer
+        , intFuzzer
+        , stringFuzzer
+        , arrayFuzzer
+        , objectFuzzer
         ]

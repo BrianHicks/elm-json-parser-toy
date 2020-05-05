@@ -1,4 +1,4 @@
-module Jaysyn exposing (Jaysyn(..), fromString)
+module Jaysyn exposing (Jaysyn(..), fromString, toString)
 
 import Parser exposing ((|.), (|=), Parser)
 
@@ -16,6 +16,40 @@ type Jaysyn
 fromString : String -> Result (List Parser.DeadEnd) Jaysyn
 fromString source =
     Parser.run parser source
+
+
+toString : Jaysyn -> String
+toString value =
+    case value of
+        Null ->
+            "null"
+
+        Bool True ->
+            "true"
+
+        Bool False ->
+            "false"
+
+        Float float ->
+            String.fromFloat float
+
+        Int int ->
+            String.fromInt int
+
+        String string ->
+            "\"" ++ string ++ "\""
+
+        Array array ->
+            "[" ++ String.join "," (List.map toString array) ++ "]"
+
+        Object pairs ->
+            "{"
+                ++ String.join ","
+                    (List.map
+                        (\( key, value_ ) -> "\"" ++ key ++ "\":" ++ toString value_)
+                        pairs
+                    )
+                ++ "}"
 
 
 parser : Parser Jaysyn
