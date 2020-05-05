@@ -105,9 +105,6 @@ stringValueFuzzer =
     Fuzz.oneOf
         [ Fuzz.constant "a"
         , Fuzz.constant " "
-
-        -- , Fuzz.constant "\\\""
-        -- , Fuzz.constant "\\\\"
         ]
         |> Fuzz.list
         |> Fuzz.map String.concat
