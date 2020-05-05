@@ -22,4 +22,18 @@ jaysynTest =
                     Jaysyn.fromString "false"
                         |> Expect.equal (Ok (Jaysyn.Bool False))
             ]
+        , describe "numbers"
+            [ test "floats" <|
+                \_ ->
+                    Jaysyn.fromString "3.1415926535"
+                        |> Expect.equal (Ok (Jaysyn.Float 3.1415926535))
+            , test "ints" <|
+                \_ ->
+                    Jaysyn.fromString "3"
+                        |> Expect.equal (Ok (Jaysyn.Int 3))
+            , test "negative numbers" <|
+                \_ ->
+                    Jaysyn.fromString "-3"
+                        |> Expect.equal (Ok (Jaysyn.Int -3))
+            ]
         ]
