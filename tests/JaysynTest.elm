@@ -40,4 +40,10 @@ jaysynTest =
                     Jaysyn.fromString "-3"
                         |> Expect.equal (Ok (Jaysyn.Int -3))
             ]
+        , describe "string"
+            [ test "basic string" <|
+                \_ ->
+                    Jaysyn.fromString "\"Hello, STL Elm!\""
+                        |> Expect.equal (Ok (Jaysyn.String "Hello, STL Elm!"))
+            ]
         ]

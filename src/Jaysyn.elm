@@ -8,6 +8,7 @@ type Jaysyn
     | Bool Bool
     | Float Float
     | Int Int
+    | String String
 
 
 fromString : String -> Result (List Parser.DeadEnd) Jaysyn
@@ -41,4 +42,10 @@ parser =
             , binary = Nothing
             , float = Just Float
             }
+
+        -- strings
+        , Parser.succeed String
+            |. Parser.token "\""
+            |= Parser.getChompedString (Parser.chompWhile (\c -> c /= '"'))
+            |. Parser.token "\""
         ]
