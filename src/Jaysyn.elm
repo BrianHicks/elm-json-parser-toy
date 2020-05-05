@@ -9,6 +9,7 @@ type Jaysyn
     | Float Float
     | Int Int
     | String String
+    | Array (List Jaysyn)
 
 
 fromString : String -> Result (List Parser.DeadEnd) Jaysyn
@@ -48,4 +49,15 @@ parser =
             |. Parser.token "\""
             |= Parser.getChompedString (Parser.chompWhile (\c -> c /= '"'))
             |. Parser.token "\""
+
+        -- arrays
+        , Parser.sequence
+            { start = "["
+            , separator = ","
+            , end = "]"
+            , spaces = Parser.spaces
+            , item = Parser.lazy (\_ -> parser)
+            , trailing = Parser.Optional
+            }
+            |> Parser.map Array
         ]

@@ -46,4 +46,14 @@ jaysynTest =
                     Jaysyn.fromString "\"Hello, STL Elm!\""
                         |> Expect.equal (Ok (Jaysyn.String "Hello, STL Elm!"))
             ]
+        , describe "array"
+            [ test "empty" <|
+                \_ ->
+                    Jaysyn.fromString "[]"
+                        |> Expect.equal (Ok (Jaysyn.Array []))
+            , test "homogeneous" <|
+                \_ ->
+                    Jaysyn.fromString "[1, null]"
+                        |> Expect.equal (Ok (Jaysyn.Array [ Jaysyn.Int 1, Jaysyn.Null ]))
+            ]
         ]
