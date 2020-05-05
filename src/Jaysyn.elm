@@ -29,14 +29,14 @@ parser =
             |. Parser.token "-"
             |= Parser.number
                 { int = Just (\i -> Int -i)
-                , hex = Nothing
+                , hex = Just (\i -> Int -i)
                 , octal = Nothing
                 , binary = Nothing
                 , float = Just (\i -> Float -i)
                 }
         , Parser.number
             { int = Just Int
-            , hex = Nothing
+            , hex = Just Int
             , octal = Nothing
             , binary = Nothing
             , float = Just Float

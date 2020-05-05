@@ -31,6 +31,10 @@ jaysynTest =
                 \_ ->
                     Jaysyn.fromString "3"
                         |> Expect.equal (Ok (Jaysyn.Int 3))
+            , test "hex" <|
+                \_ ->
+                    Jaysyn.fromString "0x1DEA"
+                        |> Expect.equal (Ok (Jaysyn.Int 0x1DEA))
             , test "negative numbers" <|
                 \_ ->
                     Jaysyn.fromString "-3"
